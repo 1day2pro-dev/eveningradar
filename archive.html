@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>글로벌 레이더 이브닝 아카이브</title>
+<style>
+  :root {
+    --bg:#1e2d45; --card:#2e4668; --card2:#273d5a;
+    --text:#ffffff; --text2:#ccdded; --text3:#90b0cc;
+    --border:#4a6280; --accent:#4d9fff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;}
+  .wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
+  header{margin-bottom:24px;}
+  h1{margin:0 0 6px;font-size:28px;font-weight:900;}
+  .subtitle{color:var(--text3);font-size:14px;}
+  .stat-bar{display:flex;gap:16px;margin:20px 0;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text2);}
+  .stat-bar strong{font-size:17px;color:var(--accent);}
+  .date-group{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+  .date-title{padding:14px 20px;font-weight:800;font-size:17px;border-bottom:1px solid var(--border);color:var(--text);}
+  .date-title .weekday{color:var(--text3);font-weight:500;margin-left:8px;font-size:14px;}
+  .date-title .count{float:right;color:var(--text3);font-weight:500;font-size:14px;}
+  .item{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-top:1px solid var(--border);}
+  .item:hover{background:rgba(77,159,255,0.06);}
+  .time{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:14px;color:var(--text3);min-width:60px;}
+  .title{flex:1;margin:0 16px;color:var(--text2);font-size:14px;}
+  .size{color:var(--text3);font-size:12px;font-family:monospace;margin-right:14px;}
+  .view-btn{color:var(--accent);text-decoration:none;font-weight:700;font-size:14px;padding:4px 12px;border-radius:6px;border:1px solid rgba(77,159,255,0.4);}
+  .view-btn:hover{background:rgba(77,159,255,0.18);}
+  .loading,.empty{text-align:center;padding:40px;color:var(--text3);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🌐 김형철의 글로벌 레이더 아카이브</h1>
+    <div class="subtitle">이브닝 방송 HTML 모아보기 (월~목 오후 8시)</div>
+  </header>
+  <div class="stat-bar" id="stat">불러오는 중...</div>
+  <div id="list"></div>
+</div>
+<script>
+const DAYS=['일','월','화','수','목','금','토'];
+function fmtSize(n){if(n<1024)return n+'B';if(n<1048576)return(n/1024).toFixed(0)+'KB';return(n/1048576).toFixed(1)+'MB';}
+fetch('archive.json?_='+Date.now())
+  .then(r=>r.json())
+  .then(data=>{
+    const stat=document.getElementById('stat');
+    const list=document.getElementById('list');
+    if(!data.items||data.items.length===0){
+      stat.innerHTML='<span>아직 아카이브된 방송이 없습니다.</span>';
+      list.innerHTML='<div class="empty">archive_evening.py 실행 후 표시됩니다.</div>';
+      return;
+    }
+    stat.innerHTML=`총 <strong>${data.count}</strong>개 방송 · <span style="color:var(--text3)">마지막 갱신: ${data.updated}</span>`;
+    const byDate={};
+    data.items.forEach(it=>{(byDate[it.trd_ymd]=byDate[it.trd_ymd]||[]).push(it);});
+    Object.keys(byDate).sort().reverse().forEach(d=>{
+      const items=byDate[d];
+      const dt=new Date(d+'T00:00:00');
+      const wd=DAYS[dt.getDay()];
+      const group=document.createElement('div');
+      group.className='date-group';
+      const title=document.createElement('div');
+      title.className='date-title';
+      title.innerHTML=`${d} <span class="weekday">(${wd})</span><span class="count">${items.length}건</span>`;
+      group.appendChild(title);
+      items.forEach(it=>{
+        const row=document.createElement('div');
+        row.className='item';
+        row.innerHTML=`<span class="time">${it.time||it.gen_dtm.slice(9,13)}</span>`+
+          `<span class="title">${it.title||'김형철의 글로벌 레이더'}</span>`+
+          `<span class="size">${fmtSize(it.size||0)}</span>`+
+          `<a class="view-btn" href="${it.url}" target="_blank">보기 →</a>`;
+        group.appendChild(row);
+      });
+      list.appendChild(group);
+    });
+  })
+  .catch(err=>{document.getElementById('stat').textContent='로드 실패: '+err.message;});
+</script>
+</body>
+</html>
