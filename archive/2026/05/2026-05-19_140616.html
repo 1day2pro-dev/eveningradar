@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>김형철의 글로벌 레이더 — 2026.05.19 (화)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#1e2d45; --bg2:#273d5a; --card:#2e4668; --card2:#1e2d45;
+  --border:#4a6280; --text:#ffffff; --text2:#ccdded; --text3:#90b0cc;
+  --up:#ff4444; --up-bg:rgba(255,68,68,0.18); --up-border:rgba(255,68,68,0.5);
+  --down:#4477ff; --down-bg:rgba(68,119,255,0.18); --down-border:rgba(68,119,255,0.5);
+  --blue:#4d9fff; --blue-bg:rgba(77,159,255,0.18); --blue-border:rgba(77,159,255,0.5);
+  --purple:#c084fc; --purple-bg:rgba(192,132,252,0.18);
+  --gold:#fbbf24; --gold-bg:rgba(251,191,36,0.18);
+  --cyan:#22d3ee; --cyan-bg:rgba(34,211,238,0.18);
+  --orange:#fb923c; --orange-bg:rgba(251,146,60,0.18);
+  --shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);}
+.carousel{width:100%;height:100vh;}
+.slides-wrapper{display:flex;height:calc(100vh - 86px);transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);}
+.slide{min-width:100vw;height:100%;padding:20px 40px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;height:86px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:100;}
+.progress-bar{position:fixed;bottom:86px;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width 0.5s;z-index:101;}
+.slide-counter{font-size:15px;color:var(--text2);font-weight:600;min-width:60px;}
+.slide-counter span{color:var(--text);font-weight:800;font-size:20px;}
+.slide-dots{display:flex;gap:4px;flex:1;justify-content:center;}
+.dot-item{display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:5px 7px;border-radius:8px;transition:all 0.2s;min-width:68px;}
+.dot-item:hover{background:var(--blue-bg);}
+.dot-bar{width:38px;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;margin-bottom:4px;}
+.dot-item.active .dot-bar{background:var(--blue);width:50px;}
+.dot-label{font-size:11px;color:var(--text3);font-weight:600;white-space:nowrap;}
+.dot-item.active .dot-label{color:var(--blue);font-weight:800;}
+.nav-buttons{display:flex;gap:8px;align-items:center;min-width:150px;justify-content:flex-end;}
+.nav-btn{width:42px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-weight:700;}
+.nav-btn:hover{background:var(--blue-bg);border-color:var(--blue);}
+.auto-btn{padding:8px 15px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;}
+.auto-btn.on{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.section-tag{font-size:15px;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;padding:6px 15px;border-radius:6px;display:inline-block;margin-bottom:6px;}
+.section-tag.blue{background:var(--blue-bg);color:var(--blue);}
+.section-tag.gold{background:var(--gold-bg);color:var(--gold);}
+.section-tag.orange{background:var(--orange-bg);color:var(--orange);}
+.section-tag.cyan{background:var(--cyan-bg);color:var(--cyan);}
+.section-tag.up{background:var(--up-bg);color:var(--up);}
+.section-tag.purple{background:var(--purple-bg);color:var(--purple);}
+.section-tag.down{background:var(--down-bg);color:var(--down);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+.card2{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.up{color:var(--up);} .dn{color:var(--down);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.stitle{font-size:36px;font-weight:900;line-height:1.2;}
+.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px;}
+.time-badge{font-size:14px;color:var(--text3);font-weight:600;padding:5px 13px;background:var(--card2);border:1px solid var(--border);border-radius:6px;}
+.live-header{display:flex;align-items:center;gap:14px;padding-bottom:2px;}
+.live-dot{display:flex;align-items:center;gap:8px;background:rgba(255,90,90,0.25);border:1px solid rgba(255,90,90,0.5);color:#ff5a5a;padding:8px 18px;border-radius:20px;font-size:17px;font-weight:800;flex-shrink:0;}
+.live-dot::before{content:'';width:10px;height:10px;border-radius:50%;background:#ff5a5a;animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.broadcast-title{font-size:42px;font-weight:900;color:var(--text);}
+.broadcast-date{font-size:22px;color:var(--text2);font-weight:600;}
+.keyword-row{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 4px;}
+.kw-chip{padding:10px 22px;border-radius:20px;font-size:22px;font-weight:700;}
+.kw-chip.red{background:var(--down-bg);color:var(--down);border:1px solid var(--down-border);}
+.kw-chip.blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+.kw-chip.gold{background:var(--gold-bg);color:var(--gold);border:1px solid rgba(245,158,11,0.4);}
+.issue-card{background:var(--gold-bg);border:1px solid rgba(251,191,36,0.35);border-radius:14px;padding:22px 26px;}
+.issue-title{font-size:16px;font-weight:800;color:var(--gold);letter-spacing:1.5px;margin-bottom:14px;}
+.issue-list{display:flex;flex-direction:column;gap:16px;}
+.issue-item{display:flex;gap:14px;align-items:flex-start;}
+.issue-num{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#000;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.issue-body{flex:1;}
+.issue-headline{font-size:24px;font-weight:900;color:var(--gold);display:block;margin-bottom:5px;}
+.issue-desc{font-size:20px;color:var(--text);line-height:1.6;font-weight:400;}
+.close-bar{background:rgba(77,159,255,0.1);border:1px solid var(--blue-border);border-radius:10px;padding:14px 20px;display:flex;gap:12px;align-items:flex-start;}
+.close-bar-label{font-size:15px;color:var(--blue);font-weight:800;white-space:nowrap;padding-top:2px;}
+.close-bar-text{font-size:19px;color:var(--text2);line-height:1.55;}
+.close-bar-text em{color:var(--text);font-style:normal;font-weight:700;}
+.today-schedule{display:flex;flex-direction:column;gap:10px;}
+.schedule-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;}
+.schedule-item.hl-red{border-color:rgba(255,90,90,0.5);background:rgba(255,90,90,0.08);}
+.schedule-item.hl-gold{border-color:rgba(251,191,36,0.5);background:rgba(251,191,36,0.08);}
+.sch-time{font-size:15px;color:var(--text3);font-weight:700;white-space:nowrap;min-width:82px;padding-top:2px;}
+.sch-body{flex:1;}
+.sch-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.sch-detail{font-size:17px;color:var(--text3);line-height:1.45;}
+.sch-badge{display:inline-block;font-size:12px;font-weight:800;padding:3px 10px;border-radius:6px;margin-left:8px;vertical-align:middle;}
+.sch-badge.high{background:var(--down-bg);color:var(--down);}
+.sch-badge.mid{background:var(--gold-bg);color:var(--gold);}
+.sch-badge.earn{background:var(--cyan-bg);color:var(--cyan);}
+.theme-period-tabs{display:flex;gap:8px;margin-bottom:12px;}
+.period-tab{padding:8px 22px;border-radius:8px;font-size:18px;font-weight:700;border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all 0.2s;}
+.period-tab.active{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.theme-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;}
+.theme-item.up-theme{border-left:4px solid var(--up);}
+.theme-item.dn-theme{border-left:4px solid var(--down);}
+.theme-nm{font-size:22px;font-weight:900;color:var(--text);margin-bottom:6px;}
+.theme-tit{font-size:17px;color:var(--gold);font-weight:700;margin-bottom:8px;}
+.theme-cn{font-size:16px;color:var(--text2);line-height:1.6;}
+.theme-dir{font-size:15px;font-weight:800;padding:4px 12px;border-radius:6px;display:inline-block;margin-bottom:8px;}
+.theme-dir.up{background:var(--up-bg);color:var(--up);}
+.theme-dir.dn{background:var(--down-bg);color:var(--down);}
+.img-col{display:flex;flex-direction:column;gap:12px;flex:1;}
+.img-box{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
+.img-box-title{font-size:18px;font-weight:800;color:var(--text2);padding:13px 20px 10px;border-bottom:1px solid var(--border);}
+.img-box img{width:100%;height:auto;object-fit:contain;flex:1;}
+.top60-wrap{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;}
+.t60{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;}
+.t60.daq{border-left:3px solid var(--blue);}
+.t60n{font-size:13px;color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;text-decoration:none;}
+.t60n:hover{color:var(--cyan);}
+a.s-stock{color:var(--text);text-decoration:none;}
+a.s-stock:hover{color:var(--cyan);}
+.t60v{font-size:13px;font-weight:800;flex-shrink:0;}
+.t60v.low{color:var(--up);}
+.t60v.mid{color:var(--gold);}
+.t60v.hi{color:var(--down);}
+.t60v.na{color:var(--text3);}
+.sector-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.sector-col{border-right:1px solid var(--border);}
+.sector-col:last-child{border-right:none;}
+.sector-header{padding:12px 14px;font-size:16px;font-weight:900;text-align:center;color:#fff;}
+.sector-row{padding:10px 14px;border-top:1px solid rgba(61,84,112,0.6);display:flex;justify-content:space-between;align-items:center;}
+.sector-row:hover{background:rgba(255,255,255,0.04);}
+.s-stock{font-size:17px;font-weight:700;color:var(--text);}
+.s-per{font-size:17px;font-weight:800;}
+.s-per.low{color:var(--up);}
+.s-per.mid{color:var(--gold);}
+.s-per.high{color:var(--down);}
+.s-per.none{color:var(--text3);}
+.index-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.index-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:26px 28px;border-left:4px solid transparent;}
+.index-card.bl{border-left-color:var(--up);}
+.index-card.dn{border-left-color:var(--down);}
+a:has(.index-card):hover .index-card{border-color:var(--blue);cursor:pointer;}
+.index-name{font-size:19px;color:var(--text3);font-weight:700;margin-bottom:12px;}
+.index-val{font-size:52px;font-weight:900;margin-bottom:8px;letter-spacing:-1px;}
+.index-chg{font-size:22px;font-weight:700;}
+.index-chg.up{color:var(--up);}
+.index-chg.dn{color:var(--down);}
+.index-abs{font-size:17px;color:var(--text3);margin-left:6px;}
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.macro-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:16px;}
+.macro-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.mi-bond{background:rgba(99,102,241,0.25);}
+.mi-dollar{background:rgba(34,197,94,0.25);}
+.mi-vix{background:rgba(249,115,22,0.25);}
+.mi-oil{background:rgba(6,182,212,0.25);}
+.macro-info{flex:1;}
+.macro-label{font-size:17px;color:var(--text3);font-weight:700;margin-bottom:5px;}
+.macro-val{font-size:34px;font-weight:900;}
+.macro-chg{font-size:18px;font-weight:700;margin-left:6px;}
+.macro-chg.up{color:var(--up);}
+.macro-chg.dn{color:var(--down);}
+.macro-card-link{transition:border-color 0.2s;}
+a:has(.macro-card-link):hover .macro-card-link{border-color:var(--blue);cursor:pointer;}
+.analysis-box{background:rgba(77,159,255,0.06);border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:12px;padding:20px 24px;}
+.analysis-list{display:flex;flex-direction:column;gap:10px;}
+.analysis-item{font-size:20px;color:var(--text2);line-height:1.65;display:flex;gap:12px;}
+.analysis-item::before{content:'■';color:var(--blue);flex-shrink:0;font-size:12px;margin-top:5px;}
+.analysis-item em{color:var(--text);font-style:normal;font-weight:700;}
+.stock-table{width:100%;border-collapse:collapse;font-size:18px;}
+.stock-table th{text-align:left;padding:10px 12px;color:var(--text3);font-weight:700;font-size:14px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.5px;}
+.stock-table td{padding:11px 12px;border-bottom:1px solid rgba(61,84,112,0.5);vertical-align:middle;}
+.stock-table tr:last-child td{border-bottom:none;}
+.stock-table tr:hover td{background:rgba(255,255,255,0.04);}
+.ticker a{font-size:20px;font-weight:900;color:var(--blue);text-decoration:none;}
+.ticker a:hover{text-decoration:underline;color:var(--cyan);}
+.company{font-size:15px;color:var(--text3);margin-top:2px;}
+.co{font-size:16px;color:var(--text3);font-weight:500;margin-left:8px;}
+.price{font-size:20px;font-weight:700;}
+.chg-badge{padding:5px 12px;border-radius:8px;font-size:17px;font-weight:800;white-space:nowrap;}
+.chg-badge.up{background:var(--up-bg);color:var(--up);}
+.chg-badge.dn{background:var(--down-bg);color:var(--down);}
+.mktcap{font-size:17px;color:var(--text2);}
+.rank-num{width:30px;height:30px;border-radius:7px;background:var(--border);color:var(--text2);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.rank-num.top3{background:var(--gold-bg);color:var(--gold);}
+.event-table{width:100%;border-collapse:collapse;}
+.event-table th{padding:10px 14px;text-align:left;font-size:14px;color:var(--text3);font-weight:700;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.5px;}
+.event-table td{padding:14px 14px;border-bottom:1px solid rgba(61,84,112,0.5);vertical-align:middle;}
+.event-table tr:last-child td{border-bottom:none;}
+.event-table tr:hover td{background:rgba(255,255,255,0.03);}
+.event-date{font-size:19px;font-weight:800;color:var(--blue);white-space:nowrap;}
+.event-day{font-size:14px;color:var(--text3);margin-top:2px;}
+.event-name{font-size:19px;font-weight:700;color:var(--text);}
+.event-detail{font-size:16px;color:var(--text3);margin-top:3px;}
+.event-name strong{color:var(--gold);}
+.imp-badge{padding:5px 13px;border-radius:10px;font-size:14px;font-weight:800;white-space:nowrap;}
+.imp-badge.high{background:var(--down-bg);color:var(--down);}
+.imp-badge.mid{background:var(--gold-bg);color:var(--gold);}
+.imp-badge.low{background:var(--blue-bg);color:var(--blue);}
+.imp-badge.top{background:rgba(249,115,22,0.2);color:#fb923c;border:1px solid rgba(249,115,22,0.4);}
+.today-row td{background:rgba(59,130,246,0.04);}
+.week-nav{display:flex;gap:6px;margin-bottom:12px;}
+.week-day{padding:5px 14px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid var(--border);color:var(--text3);cursor:pointer;}
+.week-day.today{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+a.tk{color:var(--blue);font-weight:900;text-decoration:none;}
+a.tk:hover{color:var(--cyan);text-decoration:underline;}
+.earn-week{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.earn-col{background:var(--card2);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+.earn-col-hd{font-size:15px;font-weight:900;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--border);color:var(--text2);text-align:center;letter-spacing:.5px;}
+.earn-col-hd.today{background:var(--blue-bg);color:var(--blue);border-color:rgba(77,159,255,0.4);}
+.earn-item{padding:11px 13px;border-bottom:1px solid rgba(61,84,112,0.35);display:flex;flex-direction:column;gap:5px;}
+.earn-item:last-child{border-bottom:none;}
+.earn-item.hot{background:rgba(255,68,68,0.07);}
+.earn-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+a.earn-tk{font-size:17px;font-weight:900;color:var(--blue);text-decoration:none;min-width:44px;}
+a.earn-tk:hover{color:var(--cyan);}
+.earn-badge{font-size:11px;font-weight:800;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+.earn-badge.pre{background:var(--gold-bg);color:var(--gold);}
+.earn-badge.post{background:var(--blue-bg);color:var(--blue);}
+.earn-co{font-size:13px;color:var(--text2);}
+.earn-nums{display:flex;align-items:center;gap:8px;}
+.earn-eps{font-size:15px;font-weight:800;color:var(--text);}
+</style>
+</head>
+<body>
+<div class="carousel">
+<div class="slides-wrapper" id="slidesWrapper">
+
+<!-- ══════════════ SLIDE 1: 오프닝 ══════════════ -->
+<div class="slide">
+  <div class="live-header">
+    <div class="live-dot">LIVE</div>
+    <div class="broadcast-title">김형철의 글로벌 레이더</div>
+    <div class="broadcast-date">2026.05.19 (화) · 오후 8:00 KST</div>
+  </div>
+
+  <div class="card" style="padding:14px 18px;">
+    <div style="font-size:12px;color:var(--text3);font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">오늘의 3대 키워드</div>
+    <div class="keyword-row">
+<span class="kw-chip red">필라 반도체지수 -2.47%</span>
+<span class="kw-chip gold">스페이스X 6/12 상장</span>
+<span class="kw-chip blue">AI 인프라 CapEx +80%</span>
+    </div>
+  </div>
+
+  <div class="g2" style="flex:1;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="issue-card" style="flex:1;">
+        <div class="issue-title">오늘 주요 이슈</div>
+        <div class="issue-list">
+          <div class="issue-item">
+            <div class="issue-num">1</div>
+            <div class="issue-body">
+              <span class="issue-headline">필라델피아 반도체지수 -2.47% 급락</span>
+              <span class="issue-desc">전일 필라 반도체지수가 -2.47% 급락하며 국내 반도체주에 압박 요인으로 작용. 나스닥은 -0.51%, S&amp;P500은 -0.07% 소폭 하락했으나 다우존스는 +0.32% 상승 마감.</span>
+            </div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-num">2</div>
+            <div class="issue-body">
+              <span class="issue-headline">스페이스X, 6/12 나스닥 상장 일정 앞당김</span>
+              <span class="issue-desc">스페이스X가 당초 6월말 예상에서 6월12일 나스닥 IPO로 일정 단축. 블랙록이 50억~100억달러 규모 지분 투자 검토 중. 시장 가치 최대 50조원으로 평가받으며 우주항공 테마 급등.</span>
+            </div>
+          </div>
+          <div class="issue-item">
+            <div class="issue-num">3</div>
+            <div class="issue-body">
+              <span class="issue-headline">2026년 AI 데이터센터 투자 폭발적 성장</span>
+              <span class="issue-desc">현대차증권, 북미 5대 CSP의 2026년 CapEx가 전년 대비 +80.7% 증가한 7,438억달러 전망. 삼성·SK하이닉스 등 5개 반도체 제조사 CapEx도 +45% 증가한 1,817억달러 예상. 반도체 장비 및 소재 업황 슈퍼 사이클 지속.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="close-bar">
+        <div class="close-bar-label">전날 마감</div>
+        <div class="close-bar-text">S&P500 <em>▼-0.07%</em>, 나스닥 <em>▼-0.51%</em>. 전날 미국증시는 S&amp;P500 -0.07%, 나스닥 -0.51% 소폭 하락. 필라 반도체지수 -2.47% 급락했으나 다우존스는 +0.32% 상승 마감.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <div style="font-size:12px;color:var(--text3);font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">이번 주 일정 (5/18~5/22)</div>
+      <div class="today-schedule">
+        <div class="schedule-item">
+          <div class="sch-time">오후 8:00</div>
+          <div class="sch-body">
+            <div class="sch-title">김형철의 글로벌 레이더 방송<span class="sch-badge earn">방송</span></div>
+            <div class="sch-detail">미국 지수 · 국내 테마 · 주요 종목 분석</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /slide1 -->
+
+<!-- ══════════════ SLIDE 2: 국장 테마 ══════════════ -->
+<div class="slide">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <div class="section-tag up">국장 테마 동향</div>
+      <div class="stitle">오늘의 테마 흐름 (2026.05.19)</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="period-tab active" onclick="setPeriod('AM',this)">오전(AM)</div>
+      <div class="period-tab" onclick="setPeriod('PM',this)">오후(PM)</div>
+      <div class="period-tab" onclick="setPeriod('DC',this)">장 마감 후</div>
+      <div class="time-badge">윈올 데이터</div>
+    </div>
+  </div>
+
+  <div id="themeAM"><div class="theme-grid">
+      <div class="theme-item up-theme">
+        <div class="theme-dir up">▲ 상승</div>
+        <div class="theme-nm">방위산업/전쟁 및 테러</div>
+        <div class="theme-tit">美-이란 종전 협상 교착 및 국내 방산업체 수주 호조 소식 등에 일부 관련주 상승</div>
+        <div class="theme-cn">▷美-이란 종전 협상이 교착 상태에 있는 가운데, 외신에 따르면, 미국은 이란이 건넨 새 제안을 두고 이전과 비교할 때 형식적인 진전만을 담고 있으며, 합의에 충분치 않은 것으로 보고 있다고 전해짐. 이란의 수정 종전안에 대해 백악관은 여전히 만족하지 못하고 있으며 트럼프 대통령이 국가안보팀을 소집해 군사 선택지를 논의할 예정이라고 알려짐. 트럼프 대통령은 트루스 소셜에 &quot;내일(19일)로 예정된 이란에 대한 공격을 하지 말라고 군에 지시했다&quot;고 밝혔지만, &quot;수용 가능한 합의가 도출되지 않을 경우 즉시 전면적이며 대규모의 이란에 대한 공격을 할 준비를 갖추라고 추가로 지시했다&quot;고 언급.
+
+▷또한, 전일 언론에 따르면, 한화에어로스페이스·현대로템·LIG디펜스앤에어로스페이스(D&amp;A)·한국항공우주산업(KAI) 등 방산 빅4의 합산 수주잔고는 120조원을 돌파했다고 전해짐. 한화에어로스페이스 수주잔고가 37조2,000억원으로 가장 많고 KAI가 27조3,400억원, LIG넥스원이 26조원, 현대로템이 10조5,100억원 순이며, 보수적으로 평가하더라도 최소 3년 치 일감을 확보한 셈이임. 방산 4사의 올해 1분기 합산 매출은 9조4,691억원, 영업이익은 1조1,013억원으로 집계. 지난해 2분기부터 4개 분기 연속 영업이익 1조원을 돌파했고, 이는 지난해 같은 기간보다 매출은 14.5%, 영업이익은 23.9% 늘어난 규모임. 올해 K-방산 수출 규모는 370억 달러를 넘어서며 역대 최고치를 기록할 것으로 전망.
+
+▷이 같은 소식 속 한화에어로스페이스, 센서뷰, LIG디펜스에어로스페이스, 디와이씨 등 일부 방위산업/전쟁 및 테러 테마가 상승.</div>
+      </div>
+      <div class="theme-item up-theme">
+        <div class="theme-dir up">▲ 상승</div>
+        <div class="theme-nm">화장품</div>
+        <div class="theme-tit">K-뷰티 수출 성장세 기대감 지속 등에 일부 관련주 상승</div>
+        <div class="theme-cn">▷K-뷰티 수출 성장세가 이어질 것이란 기대감이 지속되고 있는 가운데, 한국투자증권은 최근 보고서를 통해 5월1~10일 화장품 수출이 조업일수 기준 전년 동기 대비 13.1% 증가했지만, 전월 대비로는 19.1% 감소했다고 밝힘. 다만, 단기 둔화에도 연간 성장 흐름은 이어질 것으로 전망. 단기 수출 흐름은 다소 둔화됐지만 연간 기준성장 흐름은 여전히 견조하다며, 실제 올해 1~4월 화장품 수출은 전년 동기 대비 18.6% 증가해 지난해 연간 증가율(10.4%)을 크게 웃돌았다고 밝힘. 이어 전체 화장품 수출 가운데,  중국 비중은 약 18% 수준이라며, 중국 수출이 반등할 경우 전체 수출 증가율 역시 예상보다 빠르게 개선될 가능성이 있다고 분석.
+
+▷이 같은 소식 속 뷰티스킨, 마녀공장, 실리콘투, 네이처셀, 뉴키즈온 등 일부 화장품 테마가 상승.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 하락</div>
+        <div class="theme-nm">반도체 관련주</div>
+        <div class="theme-tit">필라델피아 반도체지수(-2.47%) 급락 영향 등에 하락</div>
+        <div class="theme-cn">▷지난밤 뉴욕증시에서는 美-이란 종전 협상 주시, 美 국채 금리 상승 속 기술주 약세 등에 혼조세를 보인 가운데, 필라델피아 반도체지수는 급락 마감. 지수는 전 거래일 대비 285.94포인트(-2.47%) 내린 11,302.52를 기록. 특히, 데이브 모슬리 시게이트 CEO의 인공지능(AI) 관련 수요 급증 속 병목현상으로 수요 충족 난항 언급 등에 시게이트(-6.87%)가 급락했고, 마이크론 테크놀로지(-5.95%), 샌디스크(-5.30%), 웨스턴 디즈털(-4.84%), 어플라이드 머티어리얼즈(-5.28%), TSMC(-2.08%) 등 여타 반도체 관련주들이 대부분 하락 마감. 오는 20일(현지시간) 실적 발표를 앞두고 경계감이 나타나며 엔비디아(-1.33%)도 하락.
+
+▷데이브 모슬리 시게이트 최고경영자는 18일(현지시간) JP모건 콘퍼런스에서 메모리 칩 생산 확대를 위해 필요한 것을 묻는 말에 &quot;만약 우리가 (생산 능력 확대를 위해) 기존의 팀을 철수시키고 새로운 공장을 짓거나 새로운 기계를 도입하기 시작한다면 시간이 너무 오래 걸릴 것&quot;이라고 답했으며, &quot;결국 생산 능력은 늘어나겠지만 해당 기술의 성장 속도는 둔화할 것&quot;이라고 덧붙였음.
+
+▷이와 관련, 국제유가가 다시 오르면서 인플레이션 압박이 지속될 것이라는 우려가 커지고 있는 가운데, 18일(현지시간) 미국 장기 국채 금리가 1년 만에 최고치로 치솟았음. 美 동부시간 오후 3시 기준 뉴욕 채권시장에서 10년물 국채금리는 전 거래일 대비 2.70bp 상승한 4.6230%에 거래됐으며, 통화정책에 민감한 2년물 금리는 4.0900%로 0.60bp 높아졌음. 만기가 가장 긴 30년물 국채금리는 5.1470%로 1.90bp 상승. 美 국채금리 상승 속 최근 급등에 따른 차익 실현 매물이 출회되며 반도체 관련주를 중심으로 주요 기술주가 부진한 모습.
+
+▷한편, 이날 삼성전자 노사 사후조정이 이틀째를 맞이한 가운데, 최종 결론이 나올지 주목되고 있음. 노사는 이날 오전 10시부터 정부세종청사 중앙노동위원회에서 비공개로 2차 사후조정 회의를 이어간다고 전해짐. 이번 회의의 관건은 중노위가 양측에 공식적인 최종 조정안을 제시할 수 있을지 여부로, 전일과 동일하게 오후 7시까지 진행될 예정이지만, 논의가 길어지면 회의 종료 시각은 더 늦어질 수 있고 20일까지 연장될 가능성도 있는 상황임.
+
+▷이 같은 소식 속 삼성전자, SK하이닉스, DB하이텍, 에이치브이엠, 그린광학, 다원넥스뷰, 이수페타시스, 한미반도체, SFA반도체, LB세미콘, 에스티아이, 세미파이브, 넥스트칩, 켐트로스, 오픈엣지테크놀로지, 천보, ISC 등 반도체 관련주가 하락.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 하락</div>
+        <div class="theme-nm">증권</div>
+        <div class="theme-tit">국내증시 폭락 등에 하락</div>
+        <div class="theme-cn">▷지난밤 美 증시가 미국과 이란 간 전쟁 종식 및 호르무즈 해협 재개방을 둘러싸고 엇갈린 신호 소화 속 주요 기술주들이 하락세를 이어가며 혼조세로 장을 마감한 가운데, 이날 국내 증시는 외국인 순매도 속 폭락세를 나타내는 모습. 코스피, 코스닥지수 모두 4%넘게 폭락세를 나타내고 있음.
+
+▷특히, 美 메모리 칩 제조업체 시게이트가 인공지능(AI) 투자 확대에 따른 메모리 수요를 제때 따라가지 못할 수 있다는 우려 속 반도체 투자심리가 크게 위축되는 모습. 美 CNBC 보도에 따르면, 데이브 모슬리 시게이트 최고경영자는 18일(현지시간) JP모건 콘퍼런스에서 메모리 칩 생산 확대를 위해 필요한 것을 묻는 말에 &quot;만약 우리가 (생산 능력 확대를 위해) 기존의 팀을 철수시키고 새로운 공장을 짓거나 새로운 기계를 도입하기 시작한다면 시간이 너무 오래 걸릴 것&quot;이라고 답했다고 보도. 모슬리 CEO는 이어 &quot;결국 생산 능력은 늘어나겠지만 해당 기술의 성장 속도는 둔화할 것&quot;이라고 밝힘. 이에 지난밤 美 증시에서는 시게이트 주가가 6% 넘게 하락 마감했으며, 반도체 관련주 약세를 주도했음.
+
+▷18일(현지시간) 미국은 이란이 건넨 새 제안을 두고 이전과 비교할 때 형식적인 진전만을 담고 있으며, 합의에 충분치 않은 것으로 본다는 美 언론 보도가 전해졌음. 이와 관련, 악시오스는 이란의 수정 종전안에 대해 백악관은 여전히 만족하지 못하고 있으며 트럼프 대통령이 국가안보팀을 소집해 군사 선택지를 논의할 예정이라고 보도. 트럼프 대통령 또한 뉴욕포스트와의 인터뷰에서 이란 측 제안에 실망감을 드러내며 &quot;그들은 곧 무슨 일이 벌어질지 알고 있기 때문에 그 어느 때보다도 더 합의를 원하고 있다&quot;고 강조. 이에 미군이 이란을 다시 공격할 수 있다는 우려가 커지기도 했지만, 이후 트럼프 대통령이 이란에 대한 군사행동을 연기하겠다고 밝히면서 일부 투자심리가 회복됐음.
+
+▷이에 금일 교보증권, 미래에셋증권, 상상인증권, SK증권, 신영증권, 현대차증권, NH투자증권, DB증권, 키움증권 등 증권 테마가 하락.</div>
+      </div>
+  </div></div>
+
+  <div id="themePM" style="display:none;"><div class="theme-grid"><div style='color:var(--text3);padding:20px;'>PM 테마 데이터 없음</div>
+  </div></div>
+
+  <div id="themeDC" style="display:none;"><div class="theme-grid">
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 21.89</div>
+        <div class="theme-nm">반도체 장비</div>
+        <div class="theme-tit">디바이스 +30, 저스템 +30, 미래산업 +29, 코미코 +29, 레이저쎌 +29, 네패스아크 +22, 테스 +12, 이오테크닉스 +12, 프로이천 +11, 기가비스 +10</div>
+        <div class="theme-cn">반도체 업황 슈퍼 사이클 지속 및 젠슨 황 엔비디아 CEO, 트럼프 대통령과 중국 동행 소식 등에 상승 
+▷현대차증권은 보고서를 통해 2026년 북미 주요 5개 CSP의 CapEx는 전년 대비 +80.7% 증가한 7,438억달러에 달할 것으로 전망. 여기에 국가별 Sovereign AI, Neo Cloud와 AI Lab까지 AI 투자에 가세하며 AI Datacenter 투자는 폭발적인 성장이 전망된다고 밝힘. 강력한 수요에 대응하기 위하여 반도체 제조사들도 생산 능력 확대를 위한 투자를 본격화하고 있는 가운데, 2026년 삼성전자, SK하이닉스, Micron, TSMC, Intel 5개社의 CapEx는 전년 대비 +45.0% 상승한 1,817억달러가 예상된다고 밝힘. 이들의 투자 금액 상당 부분이 반도체 장비 구매에 투입되는 만큼, 반도체 장비 산업의 수혜가 본격화될 것으로 전망. 이어 AI Datacenter 구축 확대는 고성능 AI 가속기 수요 증가로 이어지고 있으며, 이는 CoWoS와 HBM을 중심으로 한 후공정 투자 확대로 연결되고 있다고 밝힘. 특히, CoWoS Capa 병목은 AI 가속기 공급 확대의 주요 제약 요인으로 작용하고 있으며, Reasoning·Agentic AI 확산에 따른 메모리 병목 심화는 HBM 탑재량 확대와 HBM4 전환을 가속화하고 있다고 분석. 
+▷또한, NH투자증권은 보고서를 통해 삼성전자의 V8 NAND 전환이 예상보다 빠른 것으로 보인다고 밝힘. Xian Fab을 중심으로 이뤄진 V8 NAND 전환은 4Q25 마무리 후 본격적인 생산 확대 국면에 진입한 것으로 파악된다고 설명. 이에 따라 NAND 제조에 필수적인 소재들의 4Q25~1Q26 공급량이 빠르게 늘어나고 있다고 밝힘. 이에 V8 NAND 전환의 가속화가 V9 NAND 전환 가속화까지 이어질 것으로 전망. V9 NAND의 전환이 2H26 마무리될 전망인 바 빠르면 2H26부터 주요 NAND 소재 업체들의 실적 레벨이 한 번 더 상향 조정될 가능성이 높다고 밝힘. 2H25부터 쇼티지 이슈로 관심이 커졌던 NAND 소재주들이 드디어 실적으로 증명할 수 있는 구간에 진입했다고 판단. 
+▷한편, 트럼프 대통령은 12일(현지시간) 소셜미디어 트루스소셜에 글을 올려 &quot;(미국 경제방송) CNBC가 엔비디아의 젠슨 황 최고경영자(CEO)에 대해 그가 이번 중국 방문에 동행하지 않는다고 부정확하게 보도했지만, 그는 지금 에어포스원(대통령 전용기)에 타고 있다&quot;고 밝힘. 미국 매체들은 최근 보도에서 백악관 관계자를 인용해 트럼프가 방중 기업인 명단에서 젠슨 황을 일부러 제외했다고 주장한 바 있음. 
+▷이 같은 소식 속 SK하이닉스, 삼성전자, DB하이텍, 솔브레인, 테스, 네패스아크, 이오테크닉스, 한미반도체 등 반도체 관련주가 상승.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 21.75</div>
+        <div class="theme-nm">서울고속버스터미널 재개발 수혜</div>
+        <div class="theme-tit">동양고속 +29, 천일고속 +29, 대성산업 +18, 신세계 +9</div>
+        <div class="theme-cn">서울고속터미널 60층 재개발 기대감 재부각 및 도심 복합개발 본격화 기대감 등에 상승 
+▷서울시가 추진 중인 서울고속버스터미널 부지 입체복합개발 사업이 금일 시장에서 재부각되는 모습. 서울시는 50년 가까이 된 노후 터미널을 철거하고 최고 60층 이상의 초고층 복합단지로 재개발하는 방안을 추진하고 있으며, 기존 경부·영동·호남선 터미널은 지하로 통합·현대화하고, 지상에는 업무·판매·숙박·문화·주거 기능을 담은 복합 개발을 추진하고 있음. 한편, 오세훈 서울시장 후보 캠프 관계자는 “강남 고속버스터미널 개발에서 남는 이익의 일부를 공공기여로 받아 내부순환도로 지하화에 사용하는 등 강북 지역 핵심 정책을 설명할 것이다. 앞으로도 강북 지역에 상당한 시간을 배분할 것”이라고 밝힌 바 있음. 
+▷아울러 압구정·청담 일대에 디자인과 관광·상업 기능을 결합한 대형 복합개발이 본격화되면서 부동산 보유 자산주에 대한 관심도 집중되고 있음. 이와 관련, 서울시는 지난 12일 열린 제7차 건축위원회에서 압구정 갤러리아 서관 건립사업, 압구정 갤러리아 동관 건립사업, 도산대로A 역세권 활성화사업 등 3개 안건을 통과시켰다고 밝혔음. 
+▷이에 금일 동양고속, 천일고속, 대성산업, 삼표시멘트, SG세계물산, 신세계 등 서울고속버스터미널 재개발 수혜/부동산 보유 자산주 테마가 상승.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 16.69</div>
+        <div class="theme-nm">우주항공산업(누리호/인공위성 등)</div>
+        <div class="theme-tit">켄코아에어로스페이스 +29, 에이치브이엠 +27, 센서뷰 +22, AP위성 +17, 스피어 +14, 나라스페이스테크놀로지 +12, 이노스페이스 +11, 루미르 +10, 비츠로넥스텍 +9, 컨텍 +9</div>
+        <div class="theme-cn">스페이스X 상장 일정 단축 및 블랙록, 스페이스X에 최대 100억달러 투자 검토 소식 등에 상승 
+▷지난 15일(현지시간) 로이터 통신과 CNBC 방송은 복수의 소식통을 인용해 스페이스X가 IPO 일정을 앞당겨 6월12일(현지시간) 나스닥 상장을 목표로 하고 있다고 보도했음. 이를 위해 조만간 투자 설명서를 공개하며 내달 4일(현지시간)에는 투자자를 대상으로 한 설명회인 로드쇼를 진행한다고 알려짐. 또한, 같은 달 11일(현지시간) 공모가를 확정하고 상장에 나설 계획이라고 설명. 이는 당초 일론 머스크의 생일(6월28일)에 맞춰 IPO가 이뤄질 것이라는 전망이 많았지만, 미국 증권거래위원회(SEC)의 서류 검토가 예상보다 빠르게 진행되면서 일정이 앞당겨진 것임. 
+▷아울러 미 IT 전문매체 디인포메이션은 16일(현지시간) 복수의 소식통을 인용해 블랙록이 자사가 운용 중인 5,360억달러 규모의 액티브 펀드를 통해 스페이스X 상장 과정에서 50억~100억달러 규모의 지분 투자에 나서는 방안을 논의하고 있다고 보도. 스페이스X가 이번 상장을 통해 최대 750억 달러를 조달한다는 점을 고려하면 블랙록의 이와 같은 투자는 전체 물량의 최대 13.3%에 달하는 규모라고 전해짐. 블랙록이 이처럼 대규모 투자에 나서는 것은 현재 이 운용사가 가진 스페이스X 지분 가치가 3억 달러 수준으로 피델리티, 베일리 기퍼드, 프랭클린 템플턴 등 다른 투자자들에 비해 적기 때문이라고 디인포메이션은 분석했음. 
+▷이 같은 소식에 켄코아에어로스페이스, AP위성, 에이치브이엠, 아주IB투자, 나라스페이스테크놀로지, 이노스페이스, 컨텍, LK삼양, 센서뷰, 나노팀, 미래에셋벤처투자 등 스페이스X(SpaceX)/ 우주항공산업(누리호/인공위성 등) 테마가 상승.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 16.54</div>
+        <div class="theme-nm">스페이스X(SpaceX)</div>
+        <div class="theme-tit">켄코아에어로스페이스 +29, 에이치브이엠 +27, 센서뷰 +22, 미래에셋벤처투자 +22, 아주IB투자 +18, 스피어 +14, 나노팀 +11, 세아베스틸지주 +7, 와이제이링크 +5, 이녹스첨단소재 +4</div>
+        <div class="theme-cn">스페이스X 상장 일정 단축 및 블랙록, 스페이스X에 최대 100억달러 투자 검토 소식 등에 상승 
+▷지난 15일(현지시간) 로이터 통신과 CNBC 방송은 복수의 소식통을 인용해 스페이스X가 IPO 일정을 앞당겨 6월12일(현지시간) 나스닥 상장을 목표로 하고 있다고 보도했음. 이를 위해 조만간 투자 설명서를 공개하며 내달 4일(현지시간)에는 투자자를 대상으로 한 설명회인 로드쇼를 진행한다고 알려짐. 또한, 같은 달 11일(현지시간) 공모가를 확정하고 상장에 나설 계획이라고 설명. 이는 당초 일론 머스크의 생일(6월28일)에 맞춰 IPO가 이뤄질 것이라는 전망이 많았지만, 미국 증권거래위원회(SEC)의 서류 검토가 예상보다 빠르게 진행되면서 일정이 앞당겨진 것임. 
+▷아울러 미 IT 전문매체 디인포메이션은 16일(현지시간) 복수의 소식통을 인용해 블랙록이 자사가 운용 중인 5,360억달러 규모의 액티브 펀드를 통해 스페이스X 상장 과정에서 50억~100억달러 규모의 지분 투자에 나서는 방안을 논의하고 있다고 보도. 스페이스X가 이번 상장을 통해 최대 750억 달러를 조달한다는 점을 고려하면 블랙록의 이와 같은 투자는 전체 물량의 최대 13.3%에 달하는 규모라고 전해짐. 블랙록이 이처럼 대규모 투자에 나서는 것은 현재 이 운용사가 가진 스페이스X 지분 가치가 3억 달러 수준으로 피델리티, 베일리 기퍼드, 프랭클린 템플턴 등 다른 투자자들에 비해 적기 때문이라고 디인포메이션은 분석했음. 
+▷이 같은 소식에 켄코아에어로스페이스, AP위성, 에이치브이엠, 아주IB투자, 나라스페이스테크놀로지, 이노스페이스, 컨텍, LK삼양, 센서뷰, 나노팀, 미래에셋벤처투자 등 스페이스X(SpaceX)/ 우주항공산업(누리호/인공위성 등) 테마가 상승.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 15.09</div>
+        <div class="theme-nm">로봇(산업용/협동로봇 등)</div>
+        <div class="theme-tit">코스모로보틱스 +29, TPC로보틱스 +29, 브이원텍 +19, 푸른기술 +17, 계양전기 +12, 피제이전자 +11, 러셀 +9, 오늘이엔엠 +8, 디아이씨 +6, 에스엘 +6</div>
+        <div class="theme-cn">보스턴다이나믹스 기업공개(IPO) 기대감 지속 등에 상승 
+▷전일 일부 언론에 따르면, 현대차그룹이 로보틱스 계열사 보스턴다이나믹스의 기업공개(IPO) 시점이 조만간 결정될지 주목되고 있다고 전해짐. 피지컬 AI 선도 업체 타이틀을 받으며 현재 시장 가치가 최대 50조원으로 평가받는 가운데, 10% 지분을 보유한 소프트뱅크의 ‘풋옵션(주식매수청구권)’ 행사 여부가 관건이 될 전망임. 
+▷내달로 소프트뱅크의 보스턴다이나믹스에 대한 풋옵션 행사 시한이 다가오고 있음. 인수 시점(2021년 6월)을 기준으로 각각 4년(2025년 6월)과 5년(2026년 6월)이 지난 시점에 보스턴다이나믹스를 상장하지 않을 경우, 현대차그룹이 소프트뱅크의 보유 잔여 지분을 사들여야 한다는 내용임. 다만, 업계에선 소프트뱅크가 이번에 풋옵션 행사를 하지 않을 가능성이 높다고 보고 있음. 보스턴다이나믹스의 현장 투입 로드맵에 따라 가치 상승 요인이 더 있는 상황에서 소프트뱅크가 일부러 IPO 시계를 앞당겨 일찍 자금을 회수할 이유가 없기 때문임. 
+▷이 같은 소식 속 코스모로보틱스, TPC로보틱스, 푸른기술, 계양전기, 러셀, 로보스타 등 로봇(산업용/협동로봇 등), 지능형로봇/인공지능(AI), 피지컬AI/휴머노이드 로봇, 스마트팩토리(스마트공장) 테마가 상승. 또한, 현대모비스, 현대차, HL만도, 현대위아, 에스엘 등 자동차 대표주/부품 테마도 상승.</div>
+      </div>
+      <div class="theme-item dn-theme">
+        <div class="theme-dir dn">▼ 14.14</div>
+        <div class="theme-nm">반도체 재료/부품</div>
+        <div class="theme-tit">뉴파워프라즈마 +29, 피엠티 +29, KX하이텍 +13, 한솔케미칼 +12, 솔브레인 +11, 미코 +9, 메카로 +9, 티씨케이 +8, 케이씨텍 +8, 지오엘리먼트 +8</div>
+        <div class="theme-cn">반도체 업황 슈퍼 사이클 지속 및 젠슨 황 엔비디아 CEO, 트럼프 대통령과 중국 동행 소식 등에 상승 
+▷현대차증권은 보고서를 통해 2026년 북미 주요 5개 CSP의 CapEx는 전년 대비 +80.7% 증가한 7,438억달러에 달할 것으로 전망. 여기에 국가별 Sovereign AI, Neo Cloud와 AI Lab까지 AI 투자에 가세하며 AI Datacenter 투자는 폭발적인 성장이 전망된다고 밝힘. 강력한 수요에 대응하기 위하여 반도체 제조사들도 생산 능력 확대를 위한 투자를 본격화하고 있는 가운데, 2026년 삼성전자, SK하이닉스, Micron, TSMC, Intel 5개社의 CapEx는 전년 대비 +45.0% 상승한 1,817억달러가 예상된다고 밝힘. 이들의 투자 금액 상당 부분이 반도체 장비 구매에 투입되는 만큼, 반도체 장비 산업의 수혜가 본격화될 것으로 전망. 이어 AI Datacenter 구축 확대는 고성능 AI 가속기 수요 증가로 이어지고 있으며, 이는 CoWoS와 HBM을 중심으로 한 후공정 투자 확대로 연결되고 있다고 밝힘. 특히, CoWoS Capa 병목은 AI 가속기 공급 확대의 주요 제약 요인으로 작용하고 있으며, Reasoning·Agentic AI 확산에 따른 메모리 병목 심화는 HBM 탑재량 확대와 HBM4 전환을 가속화하고 있다고 분석. 
+▷또한, NH투자증권은 보고서를 통해 삼성전자의 V8 NAND 전환이 예상보다 빠른 것으로 보인다고 밝힘. Xian Fab을 중심으로 이뤄진 V8 NAND 전환은 4Q25 마무리 후 본격적인 생산 확대 국면에 진입한 것으로 파악된다고 설명. 이에 따라 NAND 제조에 필수적인 소재들의 4Q25~1Q26 공급량이 빠르게 늘어나고 있다고 밝힘. 이에 V8 NAND 전환의 가속화가 V9 NAND 전환 가속화까지 이어질 것으로 전망. V9 NAND의 전환이 2H26 마무리될 전망인 바 빠르면 2H26부터 주요 NAND 소재 업체들의 실적 레벨이 한 번 더 상향 조정될 가능성이 높다고 밝힘. 2H25부터 쇼티지 이슈로 관심이 커졌던 NAND 소재주들이 드디어 실적으로 증명할 수 있는 구간에 진입했다고 판단. 
+▷한편, 트럼프 대통령은 12일(현지시간) 소셜미디어 트루스소셜에 글을 올려 &quot;(미국 경제방송) CNBC가 엔비디아의 젠슨 황 최고경영자(CEO)에 대해 그가 이번 중국 방문에 동행하지 않는다고 부정확하게 보도했지만, 그는 지금 에어포스원(대통령 전용기)에 타고 있다&quot;고 밝힘. 미국 매체들은 최근 보도에서 백악관 관계자를 인용해 트럼프가 방중 기업인 명단에서 젠슨 황을 일부러 제외했다고 주장한 바 있음. 
+▷이 같은 소식 속 SK하이닉스, 삼성전자, DB하이텍, 솔브레인, 테스, 네패스아크, 이오테크닉스, 한미반도체 등 반도체 관련주가 상승.</div>
+      </div>
+  </div></div>
+</div><!-- /slide2 -->
+
+<!-- ══════════════ SLIDE 3: 지수·밸류에이션 이미지 ══════════════ -->
+<div class="slide">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <div class="section-tag gold">국장 밸류에이션</div>
+      <div class="stitle">KOSPI PER 추이 &amp; 고객예탁금·신용잔고</div>
+    </div>
+    <div class="time-badge">export_fnguide_smart2.py</div>
+  </div>
+  <div class="img-col">
+    <div class="img-box">
+      <div class="img-box-title">📈 KOSPI PER 추이 (2년) + Trail/Fwd PER</div>
+      <img src="tmp_s2_per_cache.png" alt="KOSPI PER 차트" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div style="display:none;align-items:center;justify-content:center;color:var(--text3);font-size:14px;padding:30px;">이미지 없음 — export_fnguide_smart2.py 실행 필요</div>
+    </div>
+    <div class="img-box">
+      <div class="img-box-title">💰 고객예탁금 vs 신용잔고 추이</div>
+      <img src="tmp_s2_credit_cache.png" alt="고객예탁금·신용잔고" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div style="display:none;align-items:center;justify-content:center;color:var(--text3);font-size:14px;padding:30px;">이미지 없음 — export_fnguide_smart2.py 실행 필요</div>
+    </div>
+  </div>
+</div><!-- /slide3 -->
+
+<!-- ══════════════ SLIDE 4: 시총 TOP60 + 섹터 밸류에이션 ══════════════ -->
+<div class="slide">
+
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div class="section-tag blue" style="margin-bottom:0;">시총 상위 60 · Fwd PER (KOSPI·KOSDAQ)</div>
+      <div class="time-badge">stc_itm · MPRC_TAMT 기준</div>
+    </div>
+    <div class="card" style="padding:10px;">
+      <div class="top60-wrap">
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A005930" target="_blank">삼성전자</a><span class="t60v low">6.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A000660" target="_blank">SK하이닉스</a><span class="t60v low">5.5x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A005935" target="_blank">삼성전자우</a><span class="t60v na">—</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A005380" target="_blank">현대차</a><span class="t60v mid">16.1x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A373220" target="_blank">LG에너지솔루션</a><span class="t60v hi">254.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A402340" target="_blank">SK스퀘어</a><span class="t60v low">4.4x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A207940" target="_blank">삼성바이오로직스</a><span class="t60v hi">30.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A012450" target="_blank">한화에어로스페이스</a><span class="t60v mid">27.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A034020" target="_blank">두산에너빌리티</a><span class="t60v hi">180.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A000270" target="_blank">기아</a><span class="t60v low">7.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A105560" target="_blank">KB금융</a><span class="t60v low">8.6x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A329180" target="_blank">HD현대중공업</a><span class="t60v mid">20.4x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A009150" target="_blank">삼성전기</a><span class="t60v hi">52.7x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A032830" target="_blank">삼성생명</a><span class="t60v mid">20.6x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A028260" target="_blank">삼성물산</a><span class="t60v mid">23.4x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A055550" target="_blank">신한지주</a><span class="t60v low">7.8x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A068270" target="_blank">셀트리온</a><span class="t60v mid">26.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A006400" target="_blank">삼성SDI</a><span class="t60v hi">55.4x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A042660" target="_blank">한화오션</a><span class="t60v mid">21.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A267260" target="_blank">HD현대일렉트릭</a><span class="t60v hi">38.5x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A006800" target="_blank">미래에셋증권</a><span class="t60v mid">20.1x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A012330" target="_blank">현대모비스</a><span class="t60v low">11.8x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A010130" target="_blank">고려아연</a><span class="t60v mid">22.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A086790" target="_blank">하나금융지주</a><span class="t60v low">7.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A035420" target="_blank">NAVER</a><span class="t60v low">14.6x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A005490" target="_blank">POSCO홀딩스</a><span class="t60v mid">17.7x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A009540" target="_blank">HD한국조선해양</a><span class="t60v low">7.7x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A015760" target="_blank">한국전력</a><span class="t60v low">3.2x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A010120" target="_blank">LS ELECTRIC</a><span class="t60v hi">67.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A298040" target="_blank">효성중공업</a><span class="t60v hi">37.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A042700" target="_blank">한미반도체</a><span class="t60v na">—</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A034730" target="_blank">SK</a><span class="t60v low">5.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A316140" target="_blank">우리금융지주</a><span class="t60v low">6.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A010140" target="_blank">삼성중공업</a><span class="t60v mid">20.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A051910" target="_blank">LG화학</a><span class="t60v hi">31.7x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A272210" target="_blank">한화시스템</a><span class="t60v hi">61.5x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A064350" target="_blank">현대로템</a><span class="t60v mid">20.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A035720" target="_blank">카카오</a><span class="t60v mid">25.4x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A096770" target="_blank">SK이노베이션</a><span class="t60v low">13.2x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A000150" target="_blank">두산</a><span class="t60v hi">56.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A000810" target="_blank">삼성화재</a><span class="t60v low">12.2x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A017670" target="_blank">SK텔레콤</a><span class="t60v mid">17.1x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A003670" target="_blank">포스코퓨처엠</a><span class="t60v hi">392.6x</span></div>
+        <div class="t60 daq"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KOSDAQ%3A086520" target="_blank">에코프로</a><span class="t60v na">—</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A267250" target="_blank">HD현대</a><span class="t60v low">9.3x</span></div>
+        <div class="t60 daq"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KOSDAQ%3A247540" target="_blank">에코프로비엠</a><span class="t60v hi">287.6x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A066570" target="_blank">LG전자</a><span class="t60v mid">18.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A011200" target="_blank">HMM</a><span class="t60v mid">15.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A138040" target="_blank">메리츠금융지주</a><span class="t60v low">7.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A000720" target="_blank">현대건설</a><span class="t60v mid">26.9x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A033780" target="_blank">KT&amp;G</a><span class="t60v low">14.6x</span></div>
+        <div class="t60 daq"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KOSDAQ%3A196170" target="_blank">알테오젠</a><span class="t60v hi">51.3x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A079550" target="_blank">LIG디펜스앤에어로스페이스</a><span class="t60v hi">43.4x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A047810" target="_blank">한국항공우주</a><span class="t60v hi">38.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A024110" target="_blank">기업은행</a><span class="t60v low">5.8x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A086280" target="_blank">현대글로비스</a><span class="t60v low">9.6x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A030200" target="_blank">KT</a><span class="t60v low">9.7x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A278470" target="_blank">에이피알</a><span class="t60v mid">24.8x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A0126Z0" target="_blank">삼성에피스홀딩스</a><span class="t60v mid">27.0x</span></div>
+        <div class="t60"><a class="t60n" href="https://www.tradingview.com/chart/?symbol=KRX%3A003550" target="_blank">LG</a><span class="t60v low">10.4x</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div class="section-tag cyan" style="margin-bottom:0;">섹터별 Fwd PER</div>
+      <div class="time-badge">consensus_stock · 2026.05.19</div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="sector-grid">
+        <div class="sector-col">
+          <div class="sector-header" style="background:#1F3864;">반도체·부품</div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A005930" target="_blank">삼성전자</a><span class="s-per low">6.0x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A000660" target="_blank">SK하이닉스</a><span class="s-per low">5.5x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A402340" target="_blank">SK스퀘어</a><span class="s-per low">4.4x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A009150" target="_blank">삼성전기</a><span class="s-per hi">52.7x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A011070" target="_blank">LG이노텍</a><span class="s-per mid">22.0x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A042700" target="_blank">한미반도체</a><span class="s-per na">—</span></div>
+        </div>
+        <div class="sector-col">
+          <div class="sector-header" style="background:#375623;">전력기기</div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A010120" target="_blank">LS ELECTRIC</a><span class="s-per hi">67.0x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A267260" target="_blank">HD현대일렉트릭</a><span class="s-per hi">38.5x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A298040" target="_blank">효성중공업</a><span class="s-per hi">37.0x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A062040" target="_blank">산일전기</a><span class="s-per hi">34.3x</span></div>
+        </div>
+        <div class="sector-col">
+          <div class="sector-header" style="background:#7030A0;">방산</div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A079550" target="_blank">LIG디펜스</a><span class="s-per hi">43.4x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A012450" target="_blank">한화에어로</a><span class="s-per mid">27.0x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A064350" target="_blank">현대로템</a><span class="s-per mid">20.9x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A272210" target="_blank">한화시스템</a><span class="s-per hi">61.5x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A047810" target="_blank">한국항공우주</a><span class="s-per hi">38.0x</span></div>
+        </div>
+        <div class="sector-col">
+          <div class="sector-header" style="background:#0080aa;">조선</div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A009540" target="_blank">HD한국조선해양</a><span class="s-per low">7.7x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A443060" target="_blank">HD현대마린</a><span class="s-per mid">25.4x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A329180" target="_blank">HD현대중공업</a><span class="s-per mid">20.4x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A010140" target="_blank">삼성중공업</a><span class="s-per mid">20.9x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A042660" target="_blank">한화오션</a><span class="s-per mid">21.3x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A082740" target="_blank">한화엔진</a><span class="s-per mid">24.8x</span></div>
+        </div>
+        <div class="sector-col">
+          <div class="sector-header" style="background:#b85700;">자동차</div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A005380" target="_blank">현대차</a><span class="s-per mid">16.1x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A000270" target="_blank">기아</a><span class="s-per low">7.3x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A012330" target="_blank">현대모비스</a><span class="s-per low">11.8x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A011210" target="_blank">현대위아</a><span class="s-per low">13.6x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A086280" target="_blank">현대글로비스</a><span class="s-per low">9.6x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A307950" target="_blank">현대오토에버</a><span class="s-per hi">68.0x</span></div>
+        </div>
+        <div class="sector-col">
+          <div class="sector-header" style="background:#900000;">2차전지</div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A006400" target="_blank">삼성SDI</a><span class="s-per hi">55.4x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A373220" target="_blank">LG에너지</a><span class="s-per hi">254.3x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A003670" target="_blank">포스코퓨처엠</a><span class="s-per hi">392.6x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KRX%3A066970" target="_blank">엘앤에프</a><span class="s-per hi">337.1x</span></div>
+          <div class="sector-row"><a class="s-stock" href="https://www.tradingview.com/chart/?symbol=KOSDAQ%3A247540" target="_blank">에코프로비엠</a><span class="s-per hi">287.6x</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slide4 -->
+
+<!-- ══════════════ SLIDE 5: 미국 시장 지표 ══════════════ -->
+<div class="slide">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <div class="section-tag gold">INDEX &amp; INDICATORS</div>
+      <div class="stitle">주요 지수 및 시장 지표</div>
+    </div>
+    <div class="time-badge">지난 거래일 마감 기준 (5/18)</div>
+  </div>
+  <div class="index-grid">
+    <a href="https://www.tradingview.com/symbols/TVC-DJI/" target="_blank" style="text-decoration:none;">
+    <div class="index-card bl"><div class="index-name">다우존스</div><div class="index-val">49,686.12</div><div><span class="index-chg up">▲ +0.32%</span><span class="index-abs">+159.95</span></div></div></a>
+    <a href="https://www.tradingview.com/symbols/NASDAQ-NDX/" target="_blank" style="text-decoration:none;">
+    <div class="index-card dn"><div class="index-name">나스닥</div><div class="index-val">26,090.73</div><div><span class="index-chg dn">▼ -0.51%</span><span class="index-abs">-134.41</span></div></div></a>
+    <a href="https://www.tradingview.com/symbols/SP-500/" target="_blank" style="text-decoration:none;">
+    <div class="index-card dn"><div class="index-name">S&amp;P 500</div><div class="index-val">7,403.05</div><div><span class="index-chg dn">▼ -0.07%</span><span class="index-abs">-5.45</span></div></div></a>
+    <a href="https://www.tradingview.com/symbols/NASDAQ-SOX/" target="_blank" style="text-decoration:none;">
+    <div class="index-card dn"><div class="index-name">필라델피아 반도체</div><div class="index-val">11,302.52</div><div><span class="index-chg dn">▼ -2.47%</span><span class="index-abs">-285.94</span></div></div></a>
+  </div>
+  <div class="macro-grid">
+    <a href="https://www.tradingview.com/chart/?symbol=TVC%3AUS10Y" target="_blank" style="text-decoration:none;"><div class="macro-card macro-card-link"><div class="macro-icon mi-bond">📈</div><div class="macro-info"><div class="macro-label">10Y 국채금리</div><div><span class="macro-val">%4.62</span><span class="macro-chg up">▲+0.61%</span></div></div></div></a>
+    <a href="https://www.tradingview.com/chart/?symbol=TVC%3ADXY" target="_blank" style="text-decoration:none;"><div class="macro-card macro-card-link"><div class="macro-icon mi-dollar">💵</div><div class="macro-info"><div class="macro-label">달러인덱스</div><div><span class="macro-val">99.14</span><span class="macro-chg up">▲+0.05%</span></div></div></div></a>
+    <a href="https://www.tradingview.com/chart/?symbol=TVC%3AVIX" target="_blank" style="text-decoration:none;"><div class="macro-card macro-card-link"><div class="macro-icon mi-vix">🔥</div><div class="macro-info"><div class="macro-label">VIX (공포지수)</div><div><span class="macro-val">17.82</span><span class="macro-chg dn">▼-3.26%</span></div></div></div></a>
+    <a href="https://www.tradingview.com/chart/?symbol=TVC%3AUSOIL" target="_blank" style="text-decoration:none;"><div class="macro-card macro-card-link"><div class="macro-icon mi-oil">🛢️</div><div class="macro-info"><div class="macro-label">WTI 원유</div><div><span class="macro-val">$102.73</span><span class="macro-chg up">▲+0.26%</span></div></div></div></a>
+  </div>
+  <div class="analysis-box">
+    <div class="analysis-list">
+      <div class="analysis-item">10년물 국채금리 <em>4.62%</em>로 고금리 유지, 기술주 밸류에이션 압박 지속.</div>
+      <div class="analysis-item">VIX <em>17.82</em>, 시장 공포지수 ▼-3.26%.</div>
+      <div class="analysis-item">달러인덱스 <em>99.14</em>으로 ▲+0.05%, 신흥국 환율 영향 주목.</div>
+      <div class="analysis-item">WTI 원유 <em>$102.73</em>, 에너지 비용과 인플레이션 관계 모니터링.</div>
+    </div>
+  </div>
+</div><!-- /slide5 -->
+
+<!-- ══════════════ SLIDE 6: 주요 종목 ══════════════ -->
+<div class="slide">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <div class="section-tag orange">주요 종목</div>
+      <div class="stitle">시총 상위 10 &amp; 반도체 대형주</div>
+    </div>
+    <div class="time-badge">지난 거래일 마감 · 티커 클릭 → Finviz</div>
+  </div>
+  <div class="g2">
+    <div class="card" style="padding:14px 16px;">
+      <div style="font-size:13px;font-weight:800;color:var(--text2);margin-bottom:10px;">시총 상위 10 종목</div>
+      <table class="stock-table">
+        <thead><tr><th>#</th><th>종목</th><th style="text-align:right;">주가</th><th style="text-align:right;">등락</th><th style="text-align:right;">시총</th></tr></thead>
+        <tbody>
+          <tr><td><div class="rank-num top3">1</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=AAPL" target="_blank">AAPL</a><span class="co">Apple</span></div></td><td style="text-align:right;" class="price">$297.8</td><td style="text-align:right;"><span class="chg-badge dn">▼0.7%</span></td><td style="text-align:right;" class="mktcap">$4.4T</td></tr>
+          <tr><td><div class="rank-num top3">2</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=NVDA" target="_blank">NVDA</a><span class="co">Nvidia · AI GPU</span></div></td><td style="text-align:right;" class="price">$222.3</td><td style="text-align:right;"><span class="chg-badge dn">▼0.9%</span></td><td style="text-align:right;" class="mktcap">$5.4T</td></tr>
+          <tr><td><div class="rank-num top3">3</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=MSFT" target="_blank">MSFT</a><span class="co">Microsoft</span></div></td><td style="text-align:right;" class="price">$423.5</td><td style="text-align:right;"><span class="chg-badge up">▲0.9%</span></td><td style="text-align:right;" class="mktcap">$3.1T</td></tr>
+          <tr><td><div class="rank-num ">4</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=AMZN" target="_blank">AMZN</a><span class="co">Amazon</span></div></td><td style="text-align:right;" class="price">$264.9</td><td style="text-align:right;"><span class="chg-badge up">▲0.9%</span></td><td style="text-align:right;" class="mktcap">$2.8T</td></tr>
+          <tr><td><div class="rank-num ">5</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=GOOGL" target="_blank">GOOGL</a><span class="co">Alphabet</span></div></td><td style="text-align:right;" class="price">$396.9</td><td style="text-align:right;"><span class="chg-badge up">▲0.4%</span></td><td style="text-align:right;" class="mktcap">$4.8T</td></tr>
+          <tr><td><div class="rank-num ">6</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=META" target="_blank">META</a><span class="co">Meta</span></div></td><td style="text-align:right;" class="price">$611.2</td><td style="text-align:right;"><span class="chg-badge up">▲0.1%</span></td><td style="text-align:right;" class="mktcap">$1.6T</td></tr>
+          <tr><td><div class="rank-num ">7</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=TSLA" target="_blank">TSLA</a><span class="co">Tesla</span></div></td><td style="text-align:right;" class="price">$410.0</td><td style="text-align:right;"><span class="chg-badge dn">▼2.0%</span></td><td style="text-align:right;" class="mktcap">$1.5T</td></tr>
+          <tr><td><div class="rank-num ">8</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=BRK-B" target="_blank">BRK-B</a><span class="co">Berkshire</span></div></td><td style="text-align:right;" class="price">$488.4</td><td style="text-align:right;"><span class="chg-badge up">▲1.2%</span></td><td style="text-align:right;" class="mktcap">$1.1T</td></tr>
+          <tr><td><div class="rank-num ">9</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=AVGO" target="_blank">AVGO</a><span class="co">Broadcom · 네트워킹</span></div></td><td style="text-align:right;" class="price">$420.7</td><td style="text-align:right;"><span class="chg-badge dn">▼0.7%</span></td><td style="text-align:right;" class="mktcap">$2.0T</td></tr>
+          <tr><td><div class="rank-num ">10</div></td><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=LLY" target="_blank">LLY</a><span class="co">Eli Lilly</span></div></td><td style="text-align:right;" class="price">$988.1</td><td style="text-align:right;"><span class="chg-badge dn">▼1.5%</span></td><td style="text-align:right;" class="mktcap">$881B</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="padding:14px 16px;">
+      <div style="font-size:13px;font-weight:800;color:var(--cyan);margin-bottom:10px;">반도체 대형주</div>
+      <table class="stock-table">
+        <thead><tr><th>종목</th><th style="text-align:right;">주가</th><th style="text-align:right;">등락</th><th style="text-align:right;">YTD</th></tr></thead>
+        <tbody>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=NVDA" target="_blank">NVDA</a><span class="co">Nvidia · AI GPU</span></div></td><td style="text-align:right;" class="price">$222.3</td><td style="text-align:right;"><span class="chg-badge dn">▼0.9%</span></td><td style="text-align:right;" class="mktcap dn">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=AMD" target="_blank">AMD</a><span class="co">Advanced Micro</span></div></td><td style="text-align:right;" class="price">$421.0</td><td style="text-align:right;"><span class="chg-badge up">▲0.2%</span></td><td style="text-align:right;" class="mktcap up">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=AVGO" target="_blank">AVGO</a><span class="co">Broadcom · 네트워킹</span></div></td><td style="text-align:right;" class="price">$420.7</td><td style="text-align:right;"><span class="chg-badge dn">▼0.7%</span></td><td style="text-align:right;" class="mktcap dn">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=MU" target="_blank">MU</a><span class="co">Micron · DRAM/HBM</span></div></td><td style="text-align:right;" class="price">$681.5</td><td style="text-align:right;"><span class="chg-badge dn">▼4.8%</span></td><td style="text-align:right;" class="mktcap dn">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=TSM" target="_blank">TSM</a><span class="co">TSMC · 파운드리</span></div></td><td style="text-align:right;" class="price">$395.9</td><td style="text-align:right;"><span class="chg-badge dn">▼1.7%</span></td><td style="text-align:right;" class="mktcap dn">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=ARM" target="_blank">ARM</a><span class="co">Arm Holdings</span></div></td><td style="text-align:right;" class="price">$215.1</td><td style="text-align:right;"><span class="chg-badge up">▲4.0%</span></td><td style="text-align:right;" class="mktcap up">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=QCOM" target="_blank">QCOM</a><span class="co">Qualcomm · 모바일</span></div></td><td style="text-align:right;" class="price">$203.6</td><td style="text-align:right;"><span class="chg-badge up">▲2.0%</span></td><td style="text-align:right;" class="mktcap up">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=INTC" target="_blank">INTC</a><span class="co">Intel · 파운드리</span></div></td><td style="text-align:right;" class="price">$108.2</td><td style="text-align:right;"><span class="chg-badge up">▲1.2%</span></td><td style="text-align:right;" class="mktcap up">—</td></tr>
+          <tr><td><div class="ticker"><a href="https://finviz.com/quote.ashx?t=MRVL" target="_blank">MRVL</a><span class="co">Marvell · 커스텀칩</span></div></td><td style="text-align:right;" class="price">$168.9</td><td style="text-align:right;"><span class="chg-badge dn">▼3.4%</span></td><td style="text-align:right;" class="mktcap dn">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /slide6 -->
+
+<!-- ══════════════ SLIDE 7: 주간 이벤트 ══════════════ -->
+<div class="slide">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <div class="section-tag purple">주간 이벤트 일정</div>
+      <div class="stitle">이번 주 핵심 일정 (5/18~5/22)</div>
+    </div>
+    <div class="time-badge">Nasdaq 실적 캘린더</div>
+  </div>
+  <div class="week-nav">
+    <div class="week-day">월 5/18</div>
+    <div class="week-day today">화 5/19</div>
+    <div class="week-day">수 5/20</div>
+    <div class="week-day">목 5/21</div>
+    <div class="week-day">금 5/22</div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="event-table">
+      <thead><tr><th style="width:100px;">날짜</th><th>이벤트</th><th style="width:80px;text-align:center;">중요도</th></tr></thead>
+      <tbody>
+        <tr><td><div class="event-date">5/18 (월)</div></td><td><div class="event-name"><a class="tk" href="https://finviz.com/quote.ashx?t=BIDU" target="_blank">BIDU</a> Baidu, Inc. 실적 발표 (장전) 외 7개</div></td><td style="text-align:center;"><span class="imp-badge mid">MID</span></td></tr>
+        <tr class="today-row"><td><div class="event-date">5/19 (화)</div><div class="event-day">오늘</div></td><td><div class="event-name"><a class="tk" href="https://finviz.com/quote.ashx?t=HD" target="_blank">HD</a> Home Depot, Inc. (The) 실적 발표 (장전) 외 7개</div></td><td style="text-align:center;"><span class="imp-badge mid">MID</span></td></tr>
+        <tr><td><div class="event-date">5/20 (수)</div></td><td><div class="event-name"><a class="tk" href="https://finviz.com/quote.ashx?t=NVDA" target="_blank">NVDA</a> NVIDIA Corporation 실적 발표 (장후) 외 7개</div></td><td style="text-align:center;"><span class="imp-badge top">최고</span></td></tr>
+        <tr><td><div class="event-date">5/21 (목)</div></td><td><div class="event-name"><a class="tk" href="https://finviz.com/quote.ashx?t=WMT" target="_blank">WMT</a> Walmart Inc. 실적 발표 (장전) 외 7개</div></td><td style="text-align:center;"><span class="imp-badge mid">MID</span></td></tr>
+        <tr><td><div class="event-date">5/22 (금)</div></td><td><div class="event-name"><a class="tk" href="https://finviz.com/quote.ashx?t=BJ" target="_blank">BJ</a> BJ's Wholesale Club Holdings, Inc. 실적 발표 (장전) 외 7개</div></td><td style="text-align:center;"><span class="imp-badge mid">MID</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:800;color:var(--text2);margin-bottom:10px;">이번 주 주목 종목</div>
+    <div class="g3">
+      <div class="card2"><div class="ticker" style="font-size:17px;"><a href="https://finviz.com/quote.ashx?t=BIDU" target="_blank" style="color:var(--blue);text-decoration:none;">BIDU</a></div><div class="company" style="margin-bottom:7px;">BIDU</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">이번 주 실적 발표 예정 · 시총 상위 종목</div></div>
+      <div class="card2"><div class="ticker" style="font-size:17px;"><a href="https://finviz.com/quote.ashx?t=TCOM" target="_blank" style="color:var(--blue);text-decoration:none;">TCOM</a></div><div class="company" style="margin-bottom:7px;">TCOM</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">이번 주 실적 발표 예정 · 시총 상위 종목</div></div>
+      <div class="card2"><div class="ticker" style="font-size:17px;"><a href="https://finviz.com/quote.ashx?t=RYAAY" target="_blank" style="color:var(--blue);text-decoration:none;">RYAAY</a></div><div class="company" style="margin-bottom:7px;">RYAAY</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">이번 주 실적 발표 예정 · 시총 상위 종목</div></div>
+    </div>
+  </div>
+</div><!-- /slide7 -->
+
+<!-- ══════════════ SLIDE 8: 주간 실적 캘린더 ══════════════ -->
+<div class="slide">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <div class="section-tag cyan">실적 캘린더</div>
+      <div class="stitle">이번 주 실적 발표 (5/18~5/22)</div>
+    </div>
+    <div class="time-badge">Nasdaq API · 시총 상위 8개/일</div>
+  </div>
+
+  <div class="earn-week">
+    <div class="earn-col">
+      <div class="earn-col-hd">월 5/18</div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=BIDU" target="_blank">BIDU</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Baidu, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=TCOM" target="_blank">TCOM</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Trip.com Group Limited</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=RYAAY" target="_blank">RYAAY</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Ryanair Holdings plc</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=XP" target="_blank">XP</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">XP Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=BRC" target="_blank">BRC</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Brady Corporation</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=RNW" target="_blank">RNW</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">ReNew Energy Global plc</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=AGYS" target="_blank">AGYS</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Agilysys, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=IQ" target="_blank">IQ</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">iQIYI, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+    </div>
+    <div class="earn-col">
+      <div class="earn-col-hd today">화 5/19</div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=HD" target="_blank">HD</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Home Depot, Inc. (The)</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=KEYS" target="_blank">KEYS</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Keysight Technologies Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=CCEP" target="_blank">CCEP</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Coca-Cola Europacific Partners plc</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=BEKE" target="_blank">BEKE</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">KE Holdings Inc</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=AS" target="_blank">AS</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Amer Sports, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=ZTO" target="_blank">ZTO</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">ZTO Express (Cayman) Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=TOL" target="_blank">TOL</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Toll Brothers, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=JHX" target="_blank">JHX</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">James Hardie Industries plc.</div>
+        <div class="earn-nums"></div>
+      </div>
+    </div>
+    <div class="earn-col">
+      <div class="earn-col-hd">수 5/20</div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=NVDA" target="_blank">NVDA</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">NVIDIA Corporation</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=ADI" target="_blank">ADI</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Analog Devices, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=TJX" target="_blank">TJX</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">TJX Companies, Inc. (The)</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=LOW" target="_blank">LOW</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Lowe's Companies, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=INTU" target="_blank">INTU</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Intuit Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=TGT" target="_blank">TGT</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Target Corporation</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=EC" target="_blank">EC</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Ecopetrol S.A.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=ROIV" target="_blank">ROIV</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Roivant Sciences Ltd.</div>
+        <div class="earn-nums"></div>
+      </div>
+    </div>
+    <div class="earn-col">
+      <div class="earn-col-hd">목 5/21</div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=WMT" target="_blank">WMT</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Walmart Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=DE" target="_blank">DE</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Deere &amp; Company</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=NTES" target="_blank">NTES</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">NetEase, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=ROST" target="_blank">ROST</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Ross Stores, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=TTWO" target="_blank">TTWO</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Take-Two Interactive Software, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=WDAY" target="_blank">WDAY</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Workday, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=CPRT" target="_blank">CPRT</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Copart, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=ZM" target="_blank">ZM</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Zoom Communications, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+    </div>
+    <div class="earn-col">
+      <div class="earn-col-hd">금 5/22</div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=BJ" target="_blank">BJ</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">BJ's Wholesale Club Holdings, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=BAH" target="_blank">BAH</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Booz Allen Hamilton Holding Corporation</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=FRO" target="_blank">FRO</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Frontline Plc</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=MNSO" target="_blank">MNSO</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">MINISO Group Holding Limited</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=BKE" target="_blank">BKE</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Buckle, Inc. (The)</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=GSL" target="_blank">GSL</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">Global Ship Lease, Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=SBR" target="_blank">SBR</a><span class="earn-badge post">장후</span></div>
+        <div class="earn-co">Sabine Royalty Trust</div>
+        <div class="earn-nums"></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-top"><a class="earn-tk" href="https://finviz.com/quote.ashx?t=SY" target="_blank">SY</a><span class="earn-badge pre">장전</span></div>
+        <div class="earn-co">So-Young International Inc.</div>
+        <div class="earn-nums"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:12px 16px;margin-top:2px;">
+    <div style="font-size:12px;color:var(--text3);font-weight:800;letter-spacing:1.5px;margin-bottom:8px;">이번 주 핵심 관전 포인트</div>
+    <div class="analysis-list">
+      <div class="analysis-item"><a class="tk" href="https://finviz.com/quote.ashx?t=BIDU" target="_blank">BIDU</a> (Baidu, Inc.) — 이번 주 실적 발표 주목, 시장 방향성 영향 가능</div>
+      <div class="analysis-item"><a class="tk" href="https://finviz.com/quote.ashx?t=TCOM" target="_blank">TCOM</a> (Trip.com Group Limited) — 이번 주 실적 발표 주목, 시장 방향성 영향 가능</div>
+      <div class="analysis-item"><a class="tk" href="https://finviz.com/quote.ashx?t=HD" target="_blank">HD</a> (Home Depot, Inc. (The)) — 이번 주 실적 발표 주목, 시장 방향성 영향 가능</div>
+    </div>
+  </div>
+</div><!-- /slide8 -->
+
+
+</div><!-- /slides-wrapper -->
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="bottom-bar">
+  <div class="slide-counter"><span id="currentSlide">1</span> / 8</div>
+  <div class="slide-dots">
+    <div class="dot-item active" onclick="goTo(0)"><div class="dot-bar"></div><div class="dot-label">오프닝</div></div>
+    <div class="dot-item" onclick="goTo(1)"><div class="dot-bar"></div><div class="dot-label">국장테마</div></div>
+    <div class="dot-item" onclick="goTo(2)"><div class="dot-bar"></div><div class="dot-label">밸류차트</div></div>
+    <div class="dot-item" onclick="goTo(3)"><div class="dot-bar"></div><div class="dot-label">섹터PER</div></div>
+    <div class="dot-item" onclick="goTo(4)"><div class="dot-bar"></div><div class="dot-label">미국지표</div></div>
+    <div class="dot-item" onclick="goTo(5)"><div class="dot-bar"></div><div class="dot-label">주요종목</div></div>
+    <div class="dot-item" onclick="goTo(6)"><div class="dot-bar"></div><div class="dot-label">주간이벤트</div></div>
+    <div class="dot-item" onclick="goTo(7)"><div class="dot-bar"></div><div class="dot-label">실적캘린더</div></div>
+  </div>
+  <div class="nav-buttons">
+    <button class="auto-btn" id="autoBtn" onclick="toggleAuto()">자동</button>
+    <button class="nav-btn" onclick="prevSlide()">‹</button>
+    <button class="nav-btn" onclick="nextSlide()">›</button>
+  </div>
+</div>
+</div><!-- /carousel -->
+
+<script>
+let cur=0,total=8,autoTimer=null;
+function goTo(n){
+  cur=Math.max(0,Math.min(n,total-1));
+  document.getElementById('slidesWrapper').style.transform=`translateX(-${cur*100}vw)`;
+  document.getElementById('currentSlide').textContent=cur+1;
+  document.getElementById('progressBar').style.width=`${((cur+1)/total)*100}%`;
+  document.querySelectorAll('.dot-item').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+function nextSlide(){goTo(cur+1);}
+function prevSlide(){goTo(cur-1);}
+function toggleAuto(){
+  const btn=document.getElementById('autoBtn');
+  if(autoTimer){clearInterval(autoTimer);autoTimer=null;btn.classList.remove('on');btn.textContent='자동';}
+  else{autoTimer=setInterval(()=>goTo((cur+1)%total),8000);btn.classList.add('on');btn.textContent='자동 ON';}
+}
+function setPeriod(period,el){
+  document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const panels={AM:'themeAM',PM:'themePM',DC:'themeDC'};
+  Object.values(panels).forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
+  const target=document.getElementById(panels[period]);
+  if(target)target.style.display='block';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')nextSlide();
+  if(e.key==='ArrowLeft')prevSlide();
+});
+goTo(0);
+</script>
+</body>
+</html>
